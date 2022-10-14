@@ -16,7 +16,10 @@ namespace StudentDetailsProject.Controllers
         public ActionResult Index()
         {
             var StudentDetails = _studentObject.GetStudentDetail();
-
+            if (StudentDetails.Count == 0)
+            {
+                TempData["InfoMessage"] = "No Students enrolled";
+            }
 
             return View(StudentDetails);
            // return View();
