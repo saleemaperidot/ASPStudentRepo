@@ -39,16 +39,29 @@ namespace StudentDetailsProject.Controllers
 
         // POST: Student/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public ActionResult Create(studentModel student)
         {
+            bool IsInserted=false;  
+
             try
             {
+                if (ModelState.IsValid)
+                {
+                    IsInserted= _studentObject.insertStudentRegistrationDetails(student);
+                    if (IsInserted)
+                    {
+                        TempData["SuccessMessage"] = "Student Details added";
+                    }
+                    else
+                        TempData["ErrorMessage"] = "Student Details adding failed";
+                }
                 // TODO: Add insert logic here
 
                 return RedirectToAction("Index");
             }
-            catch
+            catch(Exception ex)
             {
+                TempData["ErrorMessage"] = ex.Message;
                 return View();
             }
         }
