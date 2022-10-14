@@ -13,6 +13,7 @@ namespace StudentDetailsProject.DAL
     public class StudentDataAccess
     {
         string ConnectionString = ConfigurationManager.ConnectionStrings["Dbconnection"].ToString();
+        
         // Get Student Details
         public List<studentModel> GetStudentDetail()
         {
@@ -52,6 +53,36 @@ namespace StudentDetailsProject.DAL
             }
 
             return studentsList;
+        }
+
+        //insert Student details during registration
+        public bool insertStudentRegistrationDetails(studentModel student)
+        {
+            int id = 0;
+            SqlConnection connection = new SqlConnection(ConnectionString);
+            using(connection)
+            {
+                SqlCommand command = new SqlCommand("StudentRegistrationProcedure",connection);
+                command.CommandType = CommandType.StoredProcedure;
+                command.Parameters.AddWithValue("@LastName",student.LastName);
+                command.Parameters.AddWithValue("@FirstName", student.LastName);
+                command.Parameters.AddWithValue("@StudentUserName", student.LastName);
+                command.Parameters.AddWithValue("@StudentPassword", student.LastName);
+                command.Parameters.AddWithValue("@StudentAddress", student.LastName);
+                command.Parameters.AddWithValue("@City", student.LastName);
+                command.Parameters.AddWithValue("@DOB", student.LastName);
+                command.Parameters.AddWithValue("@DateOfJoining", student.LastName);
+                connection.Open();
+                id=command.ExecuteNonQuery();  
+                connection.Close();
+
+
+            }
+            if(id>0)
+
+            return true;
+            else
+                return false;
         }
     }
 }
