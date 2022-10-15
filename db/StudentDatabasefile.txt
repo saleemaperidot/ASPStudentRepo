@@ -1,0 +1,122 @@
+use student_db;
+
+CREATE TABLE StudentRegistrationTable (
+    StudentID int IDENTITY(1,1) PRIMARY KEY NOT NULL,
+    LastName varchar(255) NOT NULL,
+    FirstName varchar(255) NOT NULL,
+	StudentUserName varchar(255) NOT NULL,
+	StudentPassword varchar(255) NOT NULL,
+	FathersName varchar(255) NOT NULL,
+    StudentAddress varchar(255),
+	City varchar(255),
+	ContactNumber varchar(255),
+	DOB date,
+	DateOfJoining date
+);
+
+Create table StudentLoginTable
+(
+StudentLogidID int identity(1,1) PRIMARY KEY,
+StudentUserNameLoginTable varchar(255),
+StudentPasswordLoginTable varchar(255),
+StudentReferenceID int FOREIGN KEY REFERENCES StudentRegistrationTable(StudentID)
+
+)
+
+insert into StudentLoginTable(StudentUserNameLoginTable,StudentPasswordLoginTable,StudentReferenceID) 
+values('a','b',1) 
+
+select * from StudentRegistrationTable
+select * from StudentLoginTable
+
+/*Procedure to get all record*/
+go
+CREATE PROCEDURE SelectAllStudentDetails
+AS
+begin
+SELECT * FROM StudentRegistrationTable with(nolock)
+end
+go
+
+/*procedure for selecting login table*/
+go
+CREATE PROCEDURE selectLoginDetailsProcedure
+AS
+begin
+SELECT * FROM StudentLoginTable with(nolock)
+end
+go
+
+
+exec SelectAllStudentDetails;
+exec selectLoginDetailsProcedure;
+
+INSERT INTO StudentRegistrationTable (LastName ,
+    FirstName,
+	StudentUserName,
+	StudentPassword,
+	FathersName,
+    StudentAddress,
+	City,
+	ContactNumber,
+	DOB,
+	DateOfJoining)
+VALUES ('saleema', 'np','saleemaperidot@gmail.com', 'Sali1234', 'manas','maddena manzil', 'pattambi', '987675656558',CAST('20181010' AS DATE),CAST('20181010' AS DATE));
+
+exec SelectAllStudentDetails
+
+
+//insertion procedure//
+go
+create proc StudentRegistrationProcedure(
+
+   @LastName varchar(255) ,
+    @FirstName varchar(255) ,
+	@StudentUserName varchar(255),
+	@StudentPassword varchar(255) ,
+	@FathersName varchar(255) ,
+    @StudentAddress varchar(255),
+	@City varchar(255),
+	@ContactNumber varchar(255),
+	@DOB date,
+	@DateOfJoining date
+)
+as
+begin
+DECLARE @fk AS INT
+	begin try
+		begin tran
+INSERT INTO StudentRegistrationTable (LastName ,
+    FirstName,
+	StudentUserName,
+	StudentPassword,
+	FathersName,
+    StudentAddress,
+	City,
+	ContactNumber,
+	DOB,
+	DateOfJoining)
+
+VALUES (@LastName, @FirstName,@StudentUserName, @StudentUserName, @FathersName,@StudentAddress, @City,@ContactNumber,@DOB,@DateOfJoining)
+
+set @fk =SCOPE_IDENTITY()
+insert into StudentLoginTable(StudentUserNameLoginTable,StudentPasswordLoginTable,StudentReferenceID) 
+values(@StudentUserName,@StudentUserName,@fk) 
+
+commit tran
+end try
+begin catch
+rollback tran
+select ERROR_MESSAGE()
+end catch
+end
+go
+
+EXEC StudentRegistrationProcedure  @LastName='Saa', @FirstName='cff',@StudentUserName='vcg', @StudentPassword='bvb', @FathersName='jjjh',
+@StudentAddress='bvhv', @City='bhb',@ContactNumber='bhbh',@DOB='20181010', @DateOfJoining='20181010'
+
+exec SelectAllStudentDetails
+
+drop proc StudentRegistrationProcedure
+select * from StudentRegistrationTable
+select * from StudentLoginTable

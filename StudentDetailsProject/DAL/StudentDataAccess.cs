@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using System.Web;
+
 //using StudentDetailsProject.Models;
 
 namespace StudentDetailsProject.DAL
@@ -64,6 +65,9 @@ namespace StudentDetailsProject.DAL
             {
                 SqlCommand command = new SqlCommand("StudentRegistrationProcedure",connection);
                 command.CommandType = CommandType.StoredProcedure;
+                
+                
+                
                 command.Parameters.AddWithValue("@LastName",student.LastName);
                 command.Parameters.AddWithValue("@FathersName", student.FathersName);
                 command.Parameters.AddWithValue("@FirstName", student.FirstName);
@@ -85,6 +89,54 @@ namespace StudentDetailsProject.DAL
             return true;
             else
                 return false;
+        }
+
+
+        //get Profile
+
+        public List<studentModel> GetStudentProfileDetail(Login login)
+        {
+            int id = 0;
+            List<studentModel> studentsList = new List<studentModel>();
+            SqlConnection connection = new SqlConnection(ConnectionString);
+            using (connection)
+            {
+                SqlCommand command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "spProfile";
+                command.Parameters.AddWithValue("@usename",login.usrname);
+                command.Parameters.AddWithValue("@password", login.password);
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                DataTable studentDetails = new DataTable();
+                connection.Open();
+
+                adapter.Fill(studentDetails);
+                connection.Close();
+
+                foreach (DataRow datarow in studentDetails.Rows)
+                {
+                    //studentModel student = new studentModel();
+                    studentsList.Add(new studentModel
+                    {
+
+                        StudentId = (int)datarow["StudentID"],
+                        FirstName = (string)datarow["FirstName"],
+                        LastName = (string)datarow["LastName"],
+                        StudentAddress = (string)datarow["StudentAddress"],
+                        StudentPassword = (string)datarow["StudentPassword"],
+                        StudentUserName = (string)datarow["StudentUserName"],
+                        City = (string)datarow["City"],
+                        ContactNumber = (string)datarow["ContactNumber"],
+                        FathersName = (string)datarow["FathersName"],
+                        DateOfbirth = (DateTime)datarow["DOB"],
+                        DateOfJoining = (DateTime)datarow["DateOfJoining"]
+                    });
+                }
+
+            }
+
+            return studentsList;
         }
     }
 }

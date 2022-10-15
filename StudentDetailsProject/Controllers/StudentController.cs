@@ -31,6 +31,16 @@ namespace StudentDetailsProject.Controllers
             return View();
         }
 
+        public ActionResult Login() {
+            return View(); 
+        }
+        [HttpPost]
+        public ActionResult Login(Login login)
+        {
+            var loginCredential = _studentObject.GetStudentProfileDetail(login);
+            return View(loginCredential);
+        }
+
         // GET: Student/Create
         public ActionResult Create()
         {
