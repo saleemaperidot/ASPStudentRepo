@@ -169,7 +169,7 @@
     <Content Include="Views\Student\Index.cshtml" />
     <Content Include="Views\Student\Create.cshtml" />
     <Content Include="Views\Student\Login.cshtml" />
-    <Content Include="Views\Student\profile.cshtml" />
+    <Content Include="Views\Student\StudentPofile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -6,6 +6,9 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using System.Web;
+using System.Web.UI;
+//using System.Web.UI.WebControls;
+//using StudentDetailsProject.Models
 
 //using StudentDetailsProject.Models;
 
@@ -26,7 +29,7 @@ namespace StudentDetailsProject.DAL
                 command.CommandType = CommandType.StoredProcedure;
                 command.CommandText = "SelectAllStudentDetails";
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
-
+               
                 DataTable studentDetails = new DataTable();
                 connection.Open();
 
@@ -91,21 +94,39 @@ namespace StudentDetailsProject.DAL
                 return false;
         }
 
+        //Get Login foriengn key
 
-        //get Profile
-
-        public List<studentModel> GetStudentProfileDetail(Login login)
+        public int getReferenceIdFromLogin(Login login)
         {
-            int id = 0;
+            SqlConnection connection = new SqlConnection(ConnectionString);
+            SqlDataReader rd;
+            using (connection)
+            {
+                SqlCommand command=connection.CreateCommand();
+                command.CommandType=CommandType.StoredProcedure;
+                command.CommandText = "spLoginId";
+                command.Parameters.AddWithValue("@usename", login.usrname);
+                command.Parameters.AddWithValue("@password", login.password);
+                connection.Open();
+               //  rd = command.ExecuteReader();
+               // int value =
+                int a = Convert.ToInt32(command.ExecuteScalar());//Converting the returned value to Int32
+                return a;
+            }
+            //return rd;
+        }
+
+        //getLoggedStudentDetails
+        public List<studentModel> GetLoggedInStudentDetail(int id)
+        {
             List<studentModel> studentsList = new List<studentModel>();
             SqlConnection connection = new SqlConnection(ConnectionString);
             using (connection)
             {
                 SqlCommand command = connection.CreateCommand();
                 command.CommandType = CommandType.StoredProcedure;
-                command.CommandText = "spProfile";
-                command.Parameters.AddWithValue("@usename",login.usrname);
-                command.Parameters.AddWithValue("@password", login.password);
+                command.CommandText = "spProfileloggedin";
+                command.Parameters.AddWithValue("@id",id);
                 SqlDataAdapter adapter = new SqlDataAdapter(command);
 
                 DataTable studentDetails = new DataTable();
@@ -113,10 +134,8 @@ namespace StudentDetailsProject.DAL
 
                 adapter.Fill(studentDetails);
                 connection.Close();
-
                 foreach (DataRow datarow in studentDetails.Rows)
                 {
-                    //studentModel student = new studentModel();
                     studentsList.Add(new studentModel
                     {
 
@@ -137,6 +156,63 @@ namespace StudentDetailsProject.DAL
             }
 
             return studentsList;
+        }
+
+
+        //get Profile
+
+        public bool GetStudentProfileDetail(Login login)
+        {
+            int id = 0;
+            List<studentModel> studentsList = new List<studentModel>();
+            SqlConnection connection = new SqlConnection(ConnectionString);
+            using (connection)
+            {
+                SqlCommand command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "spProfile";
+                command.Parameters.AddWithValue("@usename",login.usrname);
+                command.Parameters.AddWithValue("@password", login.password);
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                DataTable studentDetails = new DataTable();
+                connection.Open();
+
+                adapter.Fill(studentDetails);
+                connection.Close();
+
+                if (adapter != null)
+                {
+                    return true;
+                }
+                else
+                { return false; }
+
+                /* 
+
+                 foreach (DataRow datarow in studentDetails.Rows)
+                 {
+                     //studentModel student = new studentModel();
+                     studentsList.Add(new studentModel
+                     {
+
+                         StudentId = (int)datarow["StudentID"],
+                         FirstName = (string)datarow["FirstName"],
+                         LastName = (string)datarow["LastName"],
+                         StudentAddress = (string)datarow["StudentAddress"],
+                         StudentPassword = (string)datarow["StudentPassword"],
+                         StudentUserName = (string)datarow["StudentUserName"],
+                         City = (string)datarow["City"],
+                         ContactNumber = (string)datarow["ContactNumber"],
+                         FathersName = (string)datarow["FathersName"],
+                         DateOfbirth = (DateTime)datarow["DOB"],
+                         DateOfJoining = (DateTime)datarow["DateOfJoining"]
+                     });
+                 }*/
+
+            }
+
+            //return studentsList;
         }
     }
 }

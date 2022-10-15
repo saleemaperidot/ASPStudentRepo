@@ -25,28 +25,56 @@ namespace StudentDetailsProject.Controllers
            // return View();
         }
 
+        //GET:Login
+        public ActionResult Login()
+        {
+            return View();
+        }
+
         // GET: Student/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        public ActionResult Login() {
-            return View(); 
-        }
-        [HttpPost]
-        public ActionResult Login(Login login)
+        
+       [HttpPost]
+       public ActionResult Login(Login login)
         {
-            var loginCredential = _studentObject.GetStudentProfileDetail(login);
-            return View(loginCredential);
+            int IsLogin= _studentObject.getReferenceIdFromLogin(login);
+              var loginCredential = _studentObject.GetStudentProfileDetail(login);
+            if (IsLogin!=0)
+            {
+                return RedirectToAction("StudentPofile", new { id = IsLogin });
+            }
+            else
+                return View();  
+        }
+        //var loginCredential = _studentObject.GetStudentProfileDetail(login);
+        //return RedirectToAction("profile");
+        // return View(loginCredential);
+        //GET:Profile
+        public ActionResult StudentPofile(int id)
+        {
+            var StudentDetails = _studentObject.GetLoggedInStudentDetail(id);
+            if (StudentDetails.Count == 0)
+            {
+                TempData["InfoMessage"] = "No Students enrolled";
+            }
+
+            return View(StudentDetails);
+            // return View();
+           
         }
 
+    
+       
         // GET: Student/Create
         public ActionResult Create()
         {
             return View();
         }
-
+       
         // POST: Student/Create
         [HttpPost]
         public ActionResult Create(studentModel student)
