@@ -24,6 +24,12 @@ namespace StudentDetailsProject.Controllers
             return View(StudentDetails);
            // return View();
         }
+        [HttpPost]
+        public ActionResult Index( DateTime startDate, DateTime EndDate )
+        {
+            var filterStudentWithDate = _studentObject.GetStudentDetailfilterbydate(startDate,EndDate);
+            return View(filterStudentWithDate);
+        }
 
         //GET:Login
         public ActionResult Login()

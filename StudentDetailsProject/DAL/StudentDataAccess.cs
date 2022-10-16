@@ -115,7 +115,49 @@ namespace StudentDetailsProject.DAL
             }
             //return rd;
         }
+        public List<studentModel> GetStudentDetailfilterbydate(DateTime startDate,DateTime EndDate)
+        {
+            List<studentModel> studentsList = new List<studentModel>();
+            SqlConnection connection = new SqlConnection(ConnectionString);
+            using (connection)
+            {
+                SqlCommand command = connection.CreateCommand();
+                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = "spRecordsBetweenTwoDates";
+                command.Parameters.AddWithValue("@StartDate", startDate);
+                command.Parameters.AddWithValue("@EndDate", EndDate);
+                SqlDataAdapter adapter = new SqlDataAdapter(command);
 
+                DataTable studentDetails = new DataTable();
+                connection.Open();
+
+                adapter.Fill(studentDetails);
+                connection.Close();
+                foreach (DataRow datarow in studentDetails.Rows)
+                {
+                    studentsList.Add(new studentModel
+                    {
+
+                        StudentId = (int)datarow["StudentID"],
+                        FirstName = (string)datarow["FirstName"],
+                        LastName = (string)datarow["LastName"],
+                        StudentAddress = (string)datarow["StudentAddress"],
+                        StudentPassword = (string)datarow["StudentPassword"],
+                        StudentUserName = (string)datarow["StudentUserName"],
+                        City = (string)datarow["City"],
+                        ContactNumber = (string)datarow["ContactNumber"],
+                        FathersName = (string)datarow["FathersName"],
+                        DateOfbirth = (DateTime)datarow["DOB"],
+                        DateOfJoining = (DateTime)datarow["DateOfJoining"]
+                    });
+                }
+
+            }
+
+            return studentsList;
+
+
+        }
         //getLoggedStudentDetails
         public List<studentModel> GetLoggedInStudentDetail(int id)
         {
