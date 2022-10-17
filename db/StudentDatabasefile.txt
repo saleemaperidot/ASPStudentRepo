@@ -1,10 +1,11 @@
 use student_db;
-
+Drop table StudentRegistrationTable
+ Drop table StudentLoginTable
 CREATE TABLE StudentRegistrationTable (
     StudentID int IDENTITY(1,1) PRIMARY KEY NOT NULL,
     LastName varchar(255) NOT NULL,
     FirstName varchar(255) NOT NULL,
-	StudentUserName varchar(255) NOT NULL,
+	StudentUserName varchar(255) NOT NULL UNIque,
 	StudentPassword varchar(255) NOT NULL,
 	FathersName varchar(255) NOT NULL,
     StudentAddress varchar(255),
@@ -13,7 +14,12 @@ CREATE TABLE StudentRegistrationTable (
 	DOB date,
 	DateOfJoining date
 );
+ DELETE FROM StudentRegistrationTable WHERE StudentID=16;
+drop table StudentRegistrationTable
 
+ALTER TABLE StudentRegistrationTable
+ADD UNIQUE (StudentUserName)
+delete from StudentLoginTable
 Create table StudentLoginTable
 (
 StudentLogidID int identity(1,1) PRIMARY KEY,
@@ -65,7 +71,7 @@ VALUES ('saleema', 'np','saleemaperidot@gmail.com', 'Sali1234', 'manas','maddena
 
 exec SelectAllStudentDetails
 
-
+drop proc StudentRegistrationProcedure
 //insertion procedure//
 go
 create proc StudentRegistrationProcedure(
@@ -84,6 +90,7 @@ create proc StudentRegistrationProcedure(
 as
 begin
 DECLARE @fk AS INT
+IF NOT EXISTS(SELECT StudentUserName FROM StudentRegistrationTable WHERE StudentUserName=@StudentUserName)
 	begin try
 		begin tran
 INSERT INTO StudentRegistrationTable (LastName ,
@@ -97,11 +104,11 @@ INSERT INTO StudentRegistrationTable (LastName ,
 	DOB,
 	DateOfJoining)
 
-VALUES (@LastName, @FirstName,@StudentUserName, @StudentUserName, @FathersName,@StudentAddress, @City,@ContactNumber,@DOB,@DateOfJoining)
+VALUES (@LastName, @FirstName,@StudentUserName, @StudentPassword, @FathersName,@StudentAddress, @City,@ContactNumber,@DOB,@DateOfJoining)
 
 set @fk =SCOPE_IDENTITY()
 insert into StudentLoginTable(StudentUserNameLoginTable,StudentPasswordLoginTable,StudentReferenceID) 
-values(@StudentUserName,@StudentUserName,@fk) 
+values(@StudentUserName,@StudentPassword,@fk) 
 
 commit tran
 end try
@@ -119,4 +126,53 @@ exec SelectAllStudentDetails
 
 drop proc StudentRegistrationProcedure
 select * from StudentRegistrationTable
+select * from StudentLoginTable
+
+go
+create procedure spProfileloggedin(@id int)
+as
+begin
+select *from StudentRegistrationTable
+where StudentID=@id
+end
+go
+
+exec spProfileloggedin @id=7
+go
+create procedure spLoginId(@usename varchar(255),@password varchar(255))
+as
+begin
+select StudentReferenceID from StudentLoginTable
+where StudentUserNameLoginTable=@usename and StudentPasswordLoginTable=@password
+end
+go
+
+exec spProfile @usename='saleemaperidot@gmail.com',@password='Sali1234'
+exec spLoginId @usename='a',@password='b'
+select* from StudentLoginTable
+select * from student
+
+select * from StudentLoginTable
+select *from StudentRegistrationTable
+delete from StudentRegistrationTable where StudentID=9 
+alter table
+
+
+go
+create proc spRecordsBetweenTwoDates(@StartDate date,@EndDate date)
+as
+begin
+select *from StudentRegistrationTable where DateOfJoining between @StartDate and @EndDate
+end
+go
+
+exec spRecordsBetweenTwoDates @StartDate='2012-01-01',@EndDate='2012-10-10'
+
+
+
+
+
+
+
+
 select * from StudentLoginTable
